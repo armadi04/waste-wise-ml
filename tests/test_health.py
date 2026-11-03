@@ -6,13 +6,13 @@ from fastapi.testclient import TestClient
 def test_health_endpoint(client: TestClient) -> None:
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "healthy", "service": "waste-ml"}
+    assert response.json() == {"status": "healthy", "service": "wastewaste-ml"}
 
 
 def test_versioned_health_endpoint(client: TestClient) -> None:
     response = client.get("/api/v1/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "healthy", "service": "waste-ml"}
+    assert response.json() == {"status": "healthy", "service": "wastewaste-ml"}
 
 
 def test_model_info_endpoint(client: TestClient) -> None:

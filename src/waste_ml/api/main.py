@@ -45,7 +45,7 @@ def create_app(
                 ) from exc
 
         logger.info(
-            "Waste ML service ready with model version %s",
+            "WasteWaste ML ready with model version %s",
             getattr(app.state.predictor, "model_version", "unknown"),
         )
         yield

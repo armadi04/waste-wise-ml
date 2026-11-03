@@ -1,7 +1,8 @@
-# Smart Waste Classification — Machine Learning Service
+# WasteWaste ML — Machine Learning Service
 
-FastAPI inference service for classifying waste images into **organic**, **plastic**, and
-**paper** using a MobileNetV2 transfer-learning model built with TensorFlow/Keras.
+WasteWaste ML is a FastAPI inference service for classifying waste images into **organic**,
+**plastic**, and **paper** using a MobileNetV2 transfer-learning model built with
+TensorFlow/Keras.
 
 The service is stateless and is designed to be called internally by the NestJS backend. It
 does not own a database and does not persist uploads.
@@ -302,8 +303,8 @@ overall accuracy.
 The image includes the trained model artifact and runs Uvicorn:
 
 ```bash
-docker build -t waste-ml .
-docker run --rm -p 8000:8000 waste-ml
+docker build -t wastewaste-ml .
+docker run --rm -p 8000:8000 wastewaste-ml
 ```
 
 The service can also be reached only through an internal Docker network in deployment.
@@ -343,7 +344,7 @@ Environment variables (see `.env.example`):
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `APP_NAME` | `Waste ML Service` | Service name |
+| `APP_NAME` | `WasteWaste ML` | Service name |
 | `APP_ENV` | `development` | Environment label |
 | `APP_HOST` | `0.0.0.0` | Bind host |
 | `APP_PORT` | `8000` | Bind port |

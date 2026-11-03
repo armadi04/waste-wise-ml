@@ -1,7 +1,7 @@
 [project]
-name = "waste-ml"
+name = "wastewaste-ml"
 version = "1.0.0"
-description = "Smart Waste Classification - FastAPI inference service with MobileNetV2"
+description = "WasteWaste ML - Smart waste classification FastAPI inference service with MobileNetV2"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [

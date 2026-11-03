@@ -31,7 +31,7 @@ PREDICTION_ERROR_RESPONSES = {
 
 
 def health_payload() -> HealthResponse:
-    return HealthResponse(status="healthy", service="waste-ml")
+    return HealthResponse(status="healthy", service="wastewaste-ml")
 
 
 @public_router.get("/health", response_model=HealthResponse, summary="Service health check")

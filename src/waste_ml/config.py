@@ -24,7 +24,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = "Waste ML Service"
+    app_name: str = "WasteWaste ML"
     app_env: str = "development"
     app_host: str = "0.0.0.0"
     app_port: int = 8000
