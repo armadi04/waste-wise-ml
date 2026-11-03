@@ -1,0 +1,19 @@
+{
+  "endpoint": "http://127.0.0.1:8765/api/v1/predict",
+  "image": "dataset/test/plastic/plastic_0000.jpg",
+  "requests": 30,
+  "warmup_requests": 3,
+  "status_codes": [
+    200
+  ],
+  "latency_ms": {
+    "mean": 61.14,
+    "std": 5.824,
+    "min": 54.372,
+    "p50": 59.619,
+    "p95": 72.312,
+    "max": 79.594
+  },
+  "median_ms": 59.619,
+  "measured_at": "2026-11-03T02:07:23.351854+00:00"
+}

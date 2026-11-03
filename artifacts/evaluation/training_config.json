@@ -1,0 +1,15 @@
+{
+  "dataset_dir": "/home/armadi04/bilcode/smart-waste-ml/dataset",
+  "artifacts_dir": "/home/armadi04/bilcode/smart-waste-ml/artifacts",
+  "epochs": 20,
+  "fine_tune_epochs": 10,
+  "fine_tune_layers": 30,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "fine_tune_learning_rate": 0.0001,
+  "dropout": 0.2,
+  "seed": 42,
+  "model_version": "1.0.0",
+  "patience": 5,
+  "no_fine_tune": false
+}

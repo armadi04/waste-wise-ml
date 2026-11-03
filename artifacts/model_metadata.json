@@ -1,0 +1,67 @@
+{
+  "model_name": "waste-classifier",
+  "model_version": "1.0.0",
+  "framework": "TensorFlow 2.21.0/Keras",
+  "architecture": "MobileNetV2",
+  "input_shape": [
+    224,
+    224,
+    3
+  ],
+  "classes": [
+    "organic",
+    "plastic",
+    "paper"
+  ],
+  "dataset_reference": {
+    "source": "https://huggingface.co/datasets/NeoAivara/Waste_Classification_data",
+    "license": "Apache-2.0 (as declared on the Hugging Face dataset card)",
+    "manifest": "dataset/manifest.json"
+  },
+  "dataset": {
+    "train": {
+      "organic": 105,
+      "plastic": 105,
+      "paper": 105
+    },
+    "validation": {
+      "organic": 22,
+      "plastic": 22,
+      "paper": 22
+    },
+    "test": {
+      "organic": 23,
+      "plastic": 23,
+      "paper": 23
+    }
+  },
+  "training_date": "2026-11-03T01:32:07.387148+00:00",
+  "training_seconds": 200.44,
+  "best_val_accuracy": 1.0,
+  "hyperparameters": {
+    "batch_size": 32,
+    "phase_one_epochs": 20,
+    "fine_tune_epochs": 10,
+    "fine_tune_layers": 30,
+    "learning_rate": 0.001,
+    "fine_tune_learning_rate": 0.0001,
+    "dropout": 0.2,
+    "optimizer": "Adam",
+    "loss": "SparseCategoricalCrossentropy",
+    "seed": 42
+  },
+  "environment": {
+    "python": "3.12.16",
+    "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64"
+  },
+  "evaluation": {
+    "accuracy": 0.913043,
+    "test_samples": 69,
+    "test_date": "2026-11-03T02:08:42.447067+00:00",
+    "test_dataset": "dataset/test",
+    "metrics_path": "artifacts/evaluation/metrics.json",
+    "confusion_matrix_path": "artifacts/evaluation/confusion_matrix.png",
+    "classification_report_path": "artifacts/evaluation/classification_report.txt"
+  }
+}
