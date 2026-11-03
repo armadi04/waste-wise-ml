@@ -1,0 +1,75 @@
+{
+  "name": "smart-waste-organic-plastic-paper",
+  "source": "https://huggingface.co/datasets/NeoAivara/Waste_Classification_data",
+  "source_repo": "NeoAivara/Waste_Classification_data",
+  "source_file": "data/train-00000-of-00001.parquet",
+  "license": "Apache-2.0 (as declared on the Hugging Face dataset card)",
+  "class_mapping": {
+    "organic": "biological",
+    "plastic": "plastic",
+    "paper": "paper"
+  },
+  "source_class_ids": {
+    "organic": 1,
+    "plastic": 8,
+    "paper": 7
+  },
+  "requested_per_class": 150,
+  "seed": 42,
+  "near_duplicate_hamming_distance": 2,
+  "split_ratio": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "split_counts_per_class": {
+    "train": 105,
+    "validation": 22,
+    "test": 23
+  },
+  "preprocessing": [
+    "Decode source image bytes",
+    "Convert to RGB",
+    "Average-hash near-duplicate filtering per class",
+    "Stratified 70/15/15 split by class",
+    "Save re-encoded JPEG (quality=92)"
+  ],
+  "created_at": "2026-11-03T01:28:07.447987+00:00",
+  "duplicate_filtering": {
+    "organic": {
+      "requested": 150,
+      "selected": 150,
+      "skipped_near_duplicates": 1,
+      "skipped_invalid": 0
+    },
+    "plastic": {
+      "requested": 150,
+      "selected": 150,
+      "skipped_near_duplicates": 2,
+      "skipped_invalid": 0
+    },
+    "paper": {
+      "requested": 150,
+      "selected": 150,
+      "skipped_near_duplicates": 16,
+      "skipped_invalid": 0
+    }
+  },
+  "counts": {
+    "train": {
+      "organic": 105,
+      "plastic": 105,
+      "paper": 105
+    },
+    "validation": {
+      "organic": 22,
+      "plastic": 22,
+      "paper": 22
+    },
+    "test": {
+      "organic": 23,
+      "plastic": 23,
+      "paper": 23
+    }
+  }
+}
