@@ -1,0 +1,56 @@
+[project]
+name = "waste-ml"
+version = "1.0.0"
+description = "Smart Waste Classification - FastAPI inference service with MobileNetV2"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115,<0.121",
+    "uvicorn[standard]>=0.30,<0.40",
+    "python-multipart>=0.0.9,<0.1",
+    "pydantic-settings>=2.4,<3",
+    "pillow>=10.4,<12",
+    "numpy>=1.26",
+    "pandas>=2.2,<3",
+    "pyarrow>=17",
+    "huggingface-hub>=0.24,<2",
+    "tensorflow>=2.16,<2.22",
+    "scikit-learn>=1.5,<2",
+    "matplotlib>=3.9,<4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<9",
+    "httpx>=0.27,<1",
+    "ruff>=0.6,<0.15",
+]
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/waste_ml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
