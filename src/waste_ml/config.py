@@ -11,7 +11,7 @@ CLASSES: tuple[str, ...] = ("organic", "plastic", "paper")
 CLASS_IDS: dict[str, int] = {name: index for index, name in enumerate(CLASSES)}
 IMAGE_SIZE: tuple[int, int] = (224, 224)
 INPUT_SHAPE: tuple[int, int, int] = (224, 224, 3)
-DEFAULT_MODEL_VERSION = "1.0.0"
+DEFAULT_MODEL_VERSION = "1.1.0"
 DEFAULT_SEED = 42
 
 
