@@ -3,6 +3,8 @@ FROM ghcr.io/astral-sh/uv:0.13.6 AS uv
 FROM python:3.12-slim
 
 ENV APP_ENV=production \
+    HOME=/tmp \
+    MPLCONFIGDIR=/tmp \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     UV_COMPILE_BYTECODE=1 \
