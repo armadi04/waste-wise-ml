@@ -198,6 +198,24 @@ def load_manifest(dataset_dir: Path) -> dict[str, Any] | None:
         return json.load(handle)
 
 
+def dataset_reference(manifest: dict[str, Any] | None) -> dict[str, Any]:
+    """Describe the dataset sources for model metadata (single- or multi-source manifest)."""
+    manifest = manifest or {}
+    reference: dict[str, Any] = {
+        "manifest": str((SERVICE_ROOT / "dataset" / "manifest.json").relative_to(SERVICE_ROOT)),
+    }
+    sources = manifest.get("sources")
+    if sources:
+        reference["sources"] = [
+            {"name": name, "url": value.get("url"), "license": value.get("license")}
+            for name, value in sources.items()
+        ]
+    else:
+        reference["source"] = manifest.get("source")
+        reference["license"] = manifest.get("license")
+    return reference
+
+
 def write_metadata(
     *,
     metadata_path: Path,
@@ -216,11 +234,7 @@ def write_metadata(
         "architecture": "MobileNetV2",
         "input_shape": list(INPUT_SHAPE),
         "classes": list(CLASSES),
-        "dataset_reference": {
-            "source": (manifest or {}).get("source"),
-            "license": (manifest or {}).get("license"),
-            "manifest": str((SERVICE_ROOT / "dataset" / "manifest.json").relative_to(SERVICE_ROOT)),
-        },
+        "dataset_reference": dataset_reference(manifest),
         "dataset": counts,
         "training_date": datetime.now(UTC).isoformat(),
         "training_seconds": round(training_seconds, 2),
