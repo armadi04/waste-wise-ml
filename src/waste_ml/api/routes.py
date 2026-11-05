@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import hmac
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, File, HTTPException, Request, UploadFile, status
+from fastapi import APIRouter, Depends, File, Header, HTTPException, Request, UploadFile, status
 from starlette.concurrency import run_in_threadpool
 
 from waste_ml.api.schemas import (
@@ -19,7 +20,24 @@ from waste_ml.preprocessing import InvalidImageError, UnsupportedImageFormatErro
 logger = logging.getLogger("waste_ml.api")
 
 public_router = APIRouter(tags=["health"])
-api_router = APIRouter(prefix="/api/v1")
+
+
+async def require_internal_token(
+    request: Request,
+    x_internal_token: Annotated[str | None, Header()] = None,
+) -> None:
+    """Reject callers that do not present the shared backend secret."""
+    expected = request.app.state.settings.internal_token
+    if not expected:
+        return  # Unconfigured: allowed outside production (startup enforces it there).
+    if not x_internal_token or not hmac.compare_digest(x_internal_token, expected):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing internal token",
+        )
+
+
+api_router = APIRouter(prefix="/api/v1", dependencies=[Depends(require_internal_token)])
 
 PREDICTION_ERROR_RESPONSES = {
     400: {"model": ErrorResponse, "description": "Invalid or unreadable image"},
@@ -103,7 +121,8 @@ async def predict(
     )
 
     try:
-        result = await run_in_threadpool(request.app.state.predictor.predict_bytes, data)
+        async with request.app.state.predict_semaphore:
+            result = await run_in_threadpool(request.app.state.predictor.predict_bytes, data)
     except UnsupportedImageFormatError as exc:
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,

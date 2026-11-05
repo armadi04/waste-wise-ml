@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image, UnidentifiedImageError
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
-from waste_ml.config import IMAGE_SIZE
+from waste_ml.config import IMAGE_SIZE, MAX_IMAGE_PIXELS
 
 SUPPORTED_IMAGE_FORMATS: dict[str, str] = {
     "JPEG": "image/jpeg",
@@ -23,21 +23,35 @@ class UnsupportedImageFormatError(ValueError):
     """Raised when the decoded image format is not supported."""
 
 
-def load_image(data: bytes) -> Image.Image:
-    """Decode image bytes, verify the format, and convert to RGB."""
+def load_image(data: bytes, max_pixels: int = MAX_IMAGE_PIXELS) -> Image.Image:
+    """Decode image bytes, verify the format, and convert to RGB.
+
+    The pixel count is checked from the header before any pixel data is decoded,
+    so a small file declaring a huge canvas is rejected without allocating it.
+    """
     if not data:
         raise InvalidImageError("Empty image file")
 
     try:
         with Image.open(BytesIO(data)) as source:
-            source.load()
+            width, height = source.size
+            if width * height > max_pixels:
+                raise InvalidImageError("Image dimensions are too large")
             image_format = source.format
+            if image_format not in SUPPORTED_IMAGE_FORMATS:
+                raise UnsupportedImageFormatError("Unsupported image format")
+            source.load()
             image = source.convert("RGB")
-    except (UnidentifiedImageError, OSError, ValueError) as exc:
+    except (UnsupportedImageFormatError, InvalidImageError):
+        raise
+    except (
+        UnidentifiedImageError,
+        Image.DecompressionBombError,
+        Image.DecompressionBombWarning,
+        OSError,
+        ValueError,
+    ) as exc:
         raise InvalidImageError("File cannot be read as an image") from exc
-
-    if image_format not in SUPPORTED_IMAGE_FORMATS:
-        raise UnsupportedImageFormatError("Unsupported image format")
 
     return image
 

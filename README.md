@@ -387,3 +387,10 @@ environment, best validation accuracy, and final evaluation metrics.
 - A confidence score is not a calibrated probability of correctness.
 - The service performs no authentication; deploy it on a private network and let NestJS
   expose the public API.
+
+## Internal authentication and limits
+
+- `INTERNAL_TOKEN`: shared secret the NestJS backend sends as `X-Internal-Token` (backend env `ML_SERVICE_TOKEN`). `/api/v1/*` returns 401 without it; `/health` stays open. Required when `APP_ENV=production` (the service refuses to start otherwise). Keep the service on a private network; never publish port 8000.
+- Images above 25 megapixels (decoded size, checked from the header) are rejected with 400, and decompression-bomb errors also return 400.
+- `MAX_CONCURRENT_PREDICTIONS` (default 4) bounds simultaneous decode+inference jobs; set a container memory limit as well.
+- `/docs`, `/redoc` and `/openapi.json` are disabled when `APP_ENV=production`; the Docker image defaults to production and runs as a non-root user.
