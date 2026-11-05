@@ -1,20 +1,109 @@
 {
   "name": "smart-waste-organic-plastic-paper",
-  "source": "https://huggingface.co/datasets/NeoAivara/Waste_Classification_data",
-  "source_repo": "NeoAivara/Waste_Classification_data",
-  "source_file": "data/train-00000-of-00001.parquet",
-  "license": "Apache-2.0 (as declared on the Hugging Face dataset card)",
-  "class_mapping": {
-    "organic": "biological",
-    "plastic": "plastic",
-    "paper": "paper"
+  "version": 2,
+  "sources": {
+    "neoaivara": {
+      "url": "https://huggingface.co/datasets/NeoAivara/Waste_Classification_data",
+      "repo": "NeoAivara/Waste_Classification_data",
+      "file": "data/train-00000-of-00001.parquet",
+      "license": "Apache-2.0 (as declared on the Hugging Face dataset card)",
+      "class_mapping": {
+        "organic": "biological",
+        "plastic": "plastic",
+        "paper": "paper"
+      },
+      "source_class_ids": {
+        "organic": 1,
+        "plastic": 8,
+        "paper": 7
+      },
+      "per_class": 150,
+      "split_counts_per_class": {
+        "train": 105,
+        "validation": 22,
+        "test": 23
+      },
+      "file_prefix": "",
+      "duplicate_filtering": {
+        "organic": {
+          "requested": 150,
+          "selected": 150,
+          "skipped_near_duplicates": 1,
+          "skipped_invalid": 0
+        },
+        "plastic": {
+          "requested": 150,
+          "selected": 150,
+          "skipped_near_duplicates": 2,
+          "skipped_invalid": 0
+        },
+        "paper": {
+          "requested": 150,
+          "selected": 150,
+          "skipped_near_duplicates": 16,
+          "skipped_invalid": 0
+        }
+      }
+    },
+    "realwaste": {
+      "url": "https://huggingface.co/datasets/shahzaibvohra/realwaste",
+      "repo": "shahzaibvohra/realwaste",
+      "license": "CC BY 4.0 (as declared on the Hugging Face dataset card)",
+      "citation": "S. Single, S. Iranmanesh, R. Raad, 'RealWaste: A Novel Real-Life Data Set for Landfill Waste Classification Using Deep Learning', Information 14(12):633, 2023.",
+      "class_mapping": {
+        "organic": [
+          "Food Organics",
+          "Vegetation"
+        ],
+        "plastic": [
+          "Plastic"
+        ],
+        "paper": [
+          "Paper",
+          "Cardboard"
+        ]
+      },
+      "per_class": 250,
+      "split_counts_per_class": {
+        "train": 175,
+        "validation": 37,
+        "test": 38
+      },
+      "file_prefix": "realwaste_",
+      "short_side_px": 256,
+      "duplicate_filtering": {
+        "organic": {
+          "requested": 250,
+          "selected": 250,
+          "per_source_class": {
+            "Food Organics": 125,
+            "Vegetation": 125
+          },
+          "skipped_near_duplicates": 4,
+          "skipped_invalid": 0
+        },
+        "plastic": {
+          "requested": 250,
+          "selected": 250,
+          "per_source_class": {
+            "Plastic": 250
+          },
+          "skipped_near_duplicates": 5,
+          "skipped_invalid": 0
+        },
+        "paper": {
+          "requested": 250,
+          "selected": 250,
+          "per_source_class": {
+            "Paper": 125,
+            "Cardboard": 125
+          },
+          "skipped_near_duplicates": 2,
+          "skipped_invalid": 0
+        }
+      }
+    }
   },
-  "source_class_ids": {
-    "organic": 1,
-    "plastic": 8,
-    "paper": 7
-  },
-  "requested_per_class": 150,
   "seed": 42,
   "near_duplicate_hamming_distance": 2,
   "split_ratio": {
@@ -22,54 +111,66 @@
     "validation": 0.15,
     "test": 0.15
   },
-  "split_counts_per_class": {
-    "train": 105,
-    "validation": 22,
-    "test": 23
-  },
   "preprocessing": [
     "Decode source image bytes",
     "Convert to RGB",
-    "Average-hash near-duplicate filtering per class",
-    "Stratified 70/15/15 split by class",
+    "Average-hash near-duplicate filtering per class and source",
+    "Downscale RealWaste images to a 256 px short side (NeoAivara unchanged)",
+    "Stratified 70/15/15 split per class and source",
     "Save re-encoded JPEG (quality=92)"
   ],
-  "created_at": "2026-11-03T01:28:07.447987+00:00",
-  "duplicate_filtering": {
-    "organic": {
-      "requested": 150,
-      "selected": 150,
-      "skipped_near_duplicates": 1,
-      "skipped_invalid": 0
-    },
-    "plastic": {
-      "requested": 150,
-      "selected": 150,
-      "skipped_near_duplicates": 2,
-      "skipped_invalid": 0
-    },
-    "paper": {
-      "requested": 150,
-      "selected": 150,
-      "skipped_near_duplicates": 16,
-      "skipped_invalid": 0
-    }
-  },
+  "created_at": "2026-11-05T08:10:39.607034+00:00",
   "counts": {
     "train": {
-      "organic": 105,
-      "plastic": 105,
-      "paper": 105
+      "organic": 280,
+      "plastic": 280,
+      "paper": 280
     },
     "validation": {
-      "organic": 22,
-      "plastic": 22,
-      "paper": 22
+      "organic": 59,
+      "plastic": 59,
+      "paper": 59
     },
     "test": {
-      "organic": 23,
-      "plastic": 23,
-      "paper": 23
+      "organic": 61,
+      "plastic": 61,
+      "paper": 61
+    }
+  },
+  "counts_by_source": {
+    "neoaivara": {
+      "train": {
+        "organic": 105,
+        "plastic": 105,
+        "paper": 105
+      },
+      "validation": {
+        "organic": 22,
+        "plastic": 22,
+        "paper": 22
+      },
+      "test": {
+        "organic": 23,
+        "plastic": 23,
+        "paper": 23
+      }
+    },
+    "realwaste": {
+      "train": {
+        "organic": 175,
+        "plastic": 175,
+        "paper": 175
+      },
+      "validation": {
+        "organic": 37,
+        "plastic": 37,
+        "paper": 37
+      },
+      "test": {
+        "organic": 38,
+        "plastic": 38,
+        "paper": 38
+      }
     }
   }
 }

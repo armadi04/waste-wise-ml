@@ -49,7 +49,35 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def load_test_dataset(test_dir: Path, batch_size: int) -> tf.data.Dataset:
+REALWASTE_PREFIX = "realwaste_"
+
+
+def source_of(path: str | Path) -> str:
+    """Name the photo source from the file name written by scripts/prepare_dataset.py."""
+    return "realwaste" if Path(path).name.startswith(REALWASTE_PREFIX) else "neoaivara"
+
+
+def accuracy_by_source(
+    file_paths: list[str],
+    true_labels: np.ndarray,
+    predicted_labels: np.ndarray,
+) -> dict[str, dict[str, float | int]]:
+    """Accuracy per photo source, so field-style photos are not hidden by clean ones."""
+    sources = np.asarray([source_of(path) for path in file_paths])
+    result: dict[str, dict[str, float | int]] = {}
+    for source in sorted(set(sources.tolist())):
+        mask = sources == source
+        samples = int(mask.sum())
+        correct = int((true_labels[mask] == predicted_labels[mask]).sum())
+        result[source] = {
+            "samples": samples,
+            "correct": correct,
+            "accuracy": round(correct / samples, 6),
+        }
+    return result
+
+
+def load_test_dataset(test_dir: Path, batch_size: int) -> tuple[tf.data.Dataset, list[str]]:
     dataset = tf.keras.utils.image_dataset_from_directory(
         test_dir,
         labels="inferred",
@@ -61,11 +89,12 @@ def load_test_dataset(test_dir: Path, batch_size: int) -> tf.data.Dataset:
         shuffle=False,
         verbose=False,
     )
+    file_paths = list(dataset.file_paths)
     dataset = dataset.map(
         lambda images, labels: (preprocess_input(images), labels),
         num_parallel_calls=AUTOTUNE,
     )
-    return dataset.prefetch(AUTOTUNE)
+    return dataset.prefetch(AUTOTUNE), file_paths
 
 
 def save_confusion_matrix(
@@ -259,6 +288,25 @@ def markdown_table(matrix: np.ndarray, labels: tuple[str, ...] = CLASSES) -> str
     return "\n".join([header, separator, *rows])
 
 
+def source_rows(by_source: dict[str, dict[str, float | int]] | None) -> list[str]:
+    """Markdown section for per-source accuracy; empty when the dataset has one source."""
+    if not by_source or len(by_source) < 2:
+        return []
+    rows = [
+        "## Accuracy by Photo Source",
+        "",
+        "| Source | Samples | Correct | Accuracy |",
+        "|---|---:|---:|---:|",
+    ]
+    for source, values in by_source.items():
+        rows.append(
+            f"| {source} | {values['samples']} | {values['correct']} | "
+            f"{float(values['accuracy']) * 100:.2f}% |"
+        )
+    rows.append("")
+    return rows
+
+
 def write_summary(
     output_path: Path,
     *,
@@ -295,6 +343,7 @@ def write_summary(
         "",
         *class_rows,
         "",
+        *source_rows(metrics.get("accuracy_by_source")),
         "## Confusion Matrix",
         "",
         markdown_table(matrix),
@@ -352,7 +401,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         metadata = json.load(handle)
 
     model = tf.keras.models.load_model(model_path, compile=False)
-    test_ds = load_test_dataset(test_dir, batch_size=args.batch_size)
+    test_ds, test_file_paths = load_test_dataset(test_dir, batch_size=args.batch_size)
 
     true_labels = np.concatenate([labels.numpy() for _, labels in test_ds], axis=0)
     probability_batches = model.predict(test_ds, verbose=0)
@@ -379,6 +428,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
 
     metrics: dict[str, Any] = {
         "accuracy": round(accuracy, 6),
+        "accuracy_by_source": accuracy_by_source(test_file_paths, true_labels, predicted_labels),
         "test_samples": int(len(true_labels)),
         "classes": list(CLASSES),
         "confusion_matrix": matrix.tolist(),

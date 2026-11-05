@@ -68,3 +68,25 @@ def test_internal_inference_error(failing_client: TestClient) -> None:
     )
     assert response.status_code == 500
     assert response.json() == {"detail": "Internal inference error"}
+
+
+def test_oversized_pixel_dimensions_are_rejected_as_bad_request(client: TestClient) -> None:
+    # A tiny PNG that declares a huge canvas must not be decoded.
+    buffer = BytesIO()
+    Image.new("L", (6000, 6000)).save(buffer, format="PNG", optimize=True)
+    response = client.post(
+        "/api/v1/predict",
+        files={"file": ("big.png", buffer.getvalue(), "image/png")},
+    )
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Invalid image file"}
+
+
+def test_decompression_bomb_is_a_bad_request_not_a_server_error(client: TestClient) -> None:
+    buffer = BytesIO()
+    Image.new("L", (20000, 10000)).save(buffer, format="PNG", optimize=True)
+    response = client.post(
+        "/api/v1/predict",
+        files={"file": ("bomb.png", buffer.getvalue(), "image/png")},
+    )
+    assert response.status_code == 400

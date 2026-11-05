@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 from typing import Any
@@ -30,6 +31,12 @@ def create_app(
     async def lifespan(app: FastAPI):
         app.state.settings = app_settings
         app.state.predictor = predictor
+        app.state.predict_semaphore = asyncio.Semaphore(
+            max(1, app_settings.max_concurrent_predictions)
+        )
+
+        if app_settings.is_production and not app_settings.internal_token:
+            raise RuntimeError("INTERNAL_TOKEN must be set when APP_ENV=production")
 
         if app.state.predictor is None:
             try:
@@ -58,6 +65,10 @@ def create_app(
             "The model is loaded once at application startup."
         ),
         lifespan=lifespan,
+        # Interactive docs and the schema are not served in production.
+        docs_url=None if app_settings.is_production else "/docs",
+        redoc_url=None if app_settings.is_production else "/redoc",
+        openapi_url=None if app_settings.is_production else "/openapi.json",
     )
 
     @app.exception_handler(StarletteHTTPException)

@@ -1,26 +1,33 @@
 # Evaluation Summary
 
-- **Model:** waste-classifier v1.0.0
+- **Model:** waste-classifier v1.1.0
 - **Architecture:** MobileNetV2
-- **Test samples:** 69
-- **Test accuracy:** 91.30%
-- **Evaluation date:** 2026-11-03T02:08:42.447067+00:00
+- **Test samples:** 183
+- **Test accuracy:** 95.63%
+- **Evaluation date:** 2026-11-05T08:19:11.066393+00:00
 
 ## Classification Report
 
 | Class | Precision | Recall | F1-score | Support |
 |---|---:|---:|---:|---:|
-| organic | 1.0000 | 1.0000 | 1.0000 | 23 |
-| plastic | 0.9474 | 0.7826 | 0.8571 | 23 |
-| paper | 0.8148 | 0.9565 | 0.8800 | 23 |
+| organic | 0.9677 | 0.9836 | 0.9756 | 61 |
+| plastic | 0.9828 | 0.9344 | 0.9580 | 61 |
+| paper | 0.9206 | 0.9508 | 0.9355 | 61 |
+
+## Accuracy by Photo Source
+
+| Source | Samples | Correct | Accuracy |
+|---|---:|---:|---:|
+| neoaivara | 69 | 66 | 95.65% |
+| realwaste | 114 | 109 | 95.61% |
 
 ## Confusion Matrix
 
 | True \ Predicted | organic | plastic | paper |
 |---|---|---|---|
-| organic | 23 | 0 | 0 |
-| plastic | 0 | 18 | 5 |
-| paper | 0 | 1 | 22 |
+| organic | 60 | 0 | 1 |
+| plastic | 0 | 57 | 4 |
+| paper | 2 | 1 | 58 |
 
 ## Inference Latency
 
@@ -28,9 +35,9 @@ Measured on 20 test images with batch size 1 on CPU (Intel(R) Core(TM) i7-8665U 
 
 | Stage | Mean (ms) | Std (ms) | Min (ms) | P95 (ms) | Max (ms) |
 |---|---:|---:|---:|---:|---:|
-| Preprocessing | 2.447 | 1.005 | 1.447 | 3.940 | 4.780 |
-| Inference | 80.436 | 15.679 | 70.475 | 98.485 | 144.365 |
-| End To End | 82.883 | 15.973 | 71.922 | 101.823 | 147.278 |
+| Preprocessing | 1.515 | 0.430 | 1.037 | 2.395 | 2.452 |
+| Inference | 55.870 | 1.762 | 53.491 | 58.284 | 61.476 |
+| End To End | 57.386 | 1.953 | 54.630 | 59.816 | 63.007 |
 
 ## Environment
 
