@@ -261,6 +261,9 @@ Open:
 - ReDoc: `http://localhost:8000/redoc`
 - OpenAPI schema: `http://localhost:8000/openapi.json`
 
+These are served only when `APP_ENV` is not `production`. In production, `/api/v1/*` also
+requires the `X-Internal-Token` header (see [Internal authentication and limits](#internal-authentication-and-limits)).
+
 The model is loaded exactly once during FastAPI startup. If the artifact or metadata
 cannot be loaded, startup fails with a clear error instead of serving a broken service.
 
@@ -277,8 +280,11 @@ cannot be loaded, startup fails with a clear error instead of serving a broken s
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/predict \
+  -H "X-Internal-Token: $INTERNAL_TOKEN" \
   -F "file=@dataset/test/plastic/plastic_0000.jpg;type=image/jpeg"
 ```
+
+The header is only checked when `INTERNAL_TOKEN` is set (required when `APP_ENV=production`).
 
 ```json
 {
@@ -296,7 +302,7 @@ curl -X POST http://localhost:8000/api/v1/predict \
 Upload rules:
 
 - Formats: JPEG/JPG, PNG, and WebP when the installed Pillow decoder supports it.
-- Maximum size: 5 MB (`MAX_UPLOAD_SIZE_MB`).
+- Maximum size: 5 MB (`MAX_UPLOAD_SIZE_MB`); decoded images above 25 megapixels are rejected with 400.
 - Validation uses the decoded image format, not only the client filename or MIME type.
 - Uploads are processed in memory and are not stored permanently.
 
@@ -319,8 +325,10 @@ The image includes the trained model artifact and runs Uvicorn:
 
 ```bash
 docker build -t wastewaste-ml .
-docker run --rm -p 8000:8000 wastewaste-ml
+docker run --rm -p 8000:8000 -e INTERNAL_TOKEN=change-me-to-a-long-random-string wastewaste-ml
 ```
+
+The image defaults to `APP_ENV=production`, so it refuses to start without `INTERNAL_TOKEN`.
 
 The service can also be reached only through an internal Docker network in deployment.
 
@@ -330,6 +338,7 @@ Example backend configuration:
 
 ```env
 ML_SERVICE_URL=http://ml:8000
+ML_SERVICE_TOKEN=<same value as the ML INTERNAL_TOKEN>
 ML_SERVICE_TIMEOUT_MS=15000
 ```
 
